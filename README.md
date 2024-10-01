@@ -1,4 +1,4 @@
-# Heart-Disease-Detector
+# Heart-Disease-Prediction-End-To-End 
 
 
 ### HOW TO USE :
@@ -10,7 +10,7 @@
 #### 1) Clone Github Repository :
 
 
-        git clone https://github.com/Siddhudhole/Heart-Disease-Detector.git 
+        git clone https://github.com/Siddhudhole/Heart-Disease-Prediction-End-To-End.git 
 
 #### 2) Create a new virtual environment:
 
