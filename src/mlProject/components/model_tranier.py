@@ -12,6 +12,9 @@ from src.mlProject.utils import evaluate_model
 import mlflow 
 from pathlib import Path 
 import mlflow 
+import dagshub
+
+
 
 
 @dataclass 
@@ -24,11 +27,11 @@ class ModelTrainer():
 
     def trainer(self,x,y):
         try :
-            
             logging.info("Training model...")
-            os.environ['MLFLOW_TRACKING_URI'] = "https://dagshub.com/Siddhudhole/Heart-Disease-Prediction-ML.mlflow" 
+            dagshub.init(repo_owner='Siddhudhole', repo_name='Heart-Disease-Prediction-End-To-End', mlflow=True) 
+            logging.info("dagshub initialized successfully") 
             mlflow.set_experiment("Heart_Disease_Prediction")
-            mlflow.set_tracking_uri("https://dagshub.com/Siddhudhole/Heart-Disease-Prediction-ML.mlflow")
+            mlflow.set_tracking_uri("https://dagshub.com/Siddhudhole/Heart-Disease-Prediction-End-To-End.mlflow")
             with mlflow.start_run() as run:
                 x_train, x_valid, y_train, y_valid = train_test_split(x, y, test_size=0.1, random_state=42)
                 def objective(trial):
@@ -45,7 +48,7 @@ class ModelTrainer():
                             accuracy = accuracy_score(y_true=y_valid,y_pred=y_preds)
                             return accuracy
                 study = optuna.create_study(direction='maximize')
-                study.optimize(objective, n_trials=10)
+                study.optimize(objective, n_trials=20)
                 logging.info('Best trial: score {}, params: {}'.format(study.best_value, study.best_params))
                 model = RandomForestClassifier(n_estimators=study.best_params['n_estimators'], 
                                                             criterion=study.best_params['criterion'], 
@@ -56,10 +59,10 @@ class ModelTrainer():
                 y_pred = model.predict(x)
                 logging.info("Model preparation completed") 
                 save_model(model,self.config.model_path)
-                mlflow.log_param(study.best_params['n_estimators'])
-                mlflow.log_param(study.best_params['criterion'])
-                mlflow.log_param(study.best_params['max_depth'])
-                mlflow.log_param(study.best_params['max_features'])
+                mlflow.log_param('n_estimators',study.best_params['n_estimators'])
+                mlflow.log_param('criterion',study.best_params['criterion'])
+                mlflow.log_param('max_depth',study.best_params['max_depth'])
+                mlflow.log_param('max_features',study.best_params['max_features'])
                 accuracy, precision, recall  = evaluate_model(y_test=y,y_pred=y_pred)
                 mlflow.log_metric("accuracy", accuracy)
                 mlflow.log_metric("precision", precision)
