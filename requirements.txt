@@ -1,0 +1,7 @@
+numpy 
+pandas 
+python-dotenv
+mysql-connector-python 
+scikit-learn
+optuna 
+-e . 
