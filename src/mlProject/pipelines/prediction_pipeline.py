@@ -19,10 +19,9 @@ class Prediction():
 
     def predict(self,input_data:pd.DataFrame):
         try: 
-            logging.info("Prediction starting")
-            logging.info('Model and processor are loaded')
+            logging.info("Prediction starting") 
             input_data = self.processor.transform(input_data)  # Apply the same transformations as the training pipeline
-            logging.info("input data is processed successfully{}".format(input_data))
+            logging.info("input data is processed successfully {}".format(input_data))
             prediction = self.model.predict(input_data) 
             logging.info("Prediction completed successfully")  # log the success message 
             return prediction 
