@@ -10,7 +10,7 @@ from sklearn.compose import ColumnTransformer
 from src.mlProject.utils import save_model
 from dataclasses import dataclass 
 from pathlib import Path 
-from sklearn.preprocessing import OneHotEncoder 
+import numpy as np 
 
 
 
@@ -22,13 +22,12 @@ class DataTransformation:
     def __init__(self):
         self.transformation_config = DataTransformationConfig() 
         
-    def get_processor(self,data_path):
+    def get_processor(self):
         try :
             num_cols = ['age','gender','impluse','pressurehight','pressurelow','glucose','kcm','troponin']
             cat_cols = ['class'] 
             Num_pipe = Pipeline(steps=[('imputer',SimpleImputer()),('scaler',StandardScaler())])
-            Cat_pipe = Pipeline(steps=[('imputer',SimpleImputer(strategy='most_frequent')),('onehot',OneHotEncoder(handle_unknown='ignore'))])
-            processor = ColumnTransformer(transformers=[('num_pipe',Num_pipe,num_cols),('cat_pipe',Cat_pipe,cat_cols)])
+            processor = ColumnTransformer(transformers=[('num_pipe',Num_pipe,num_cols)])
             return processor 
          
         except Exception as e:
@@ -38,13 +37,26 @@ class DataTransformation:
     def transform(self,train_path,test_path):
         try :
             logging.info('Processer is get for data transformation')
-            processor = self.get_processor(train_path)
+            processor = self.get_processor()
             logging.info('Loading data from '+str(train_path)+' and '+str(test_path)) 
+            # Read data from the data dir 
             train_data = pd.read_csv(train_path)
             test_data = pd.read_csv(test_path)
+            # Separate features and target  column  for train and test data  sets  and encoding categorical data  if needed  as per requirement
+            train_input_cols = train_data.drop('class',axis=1)
+            test_input_cols = test_data.drop('class',axis=1) 
+            train_target_cols = train_data['class']
+            test_target_cols = test_data['class'] 
+            # Encoding categorical data
+            train_target_cols = np.array(train_target_cols.map(lambda x:1 if x=='positive' else 0))
+            test_target_cols = np.array(test_target_cols.map(lambda x:1 if x=='positive' else 0))  
+            # Applying transformation pipeline to train and test data  sets  using fit_transform method of ColumnTransformer class  and converting the output numpy arrays back to pandas DataFrame for easier handling
             logging.info('Data transformation started')
-            train_data_transformed = processor.fit_transform(train_data)
-            test_data_transformed = processor.transform(test_data) 
+            train_input_trans = processor.fit_transform(train_input_cols)
+            test_input_trans = processor.transform(test_input_cols) 
+            # Converting numpy arrays back to pandas DataFrame for easier handling
+            train_data_transformed = np.concatenate((train_input_trans,train_target_cols.reshape(-1,1)),axis=1)
+            test_data_transformed = np.concatenate((test_input_trans,test_target_cols.reshape(-1,1)),axis=1)
             logging.info('Data transformation completed') 
             logging.info('Saving processor started')
             save_model(processor,self.transformation_config.processor_path)
@@ -53,6 +65,9 @@ class DataTransformation:
         except Exception as e:
             logging.error(str(e))
             raise CustomException(e,sys)
+        
+
+        
         
 
 

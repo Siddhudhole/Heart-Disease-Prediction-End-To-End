@@ -1,7 +1,10 @@
 numpy 
 pandas 
 python-dotenv
-mysql-connector-python 
 scikit-learn
 optuna 
+mlflow
+dagshub
+streamlit 
+mysql-connector-python
 -e . 

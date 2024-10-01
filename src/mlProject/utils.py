@@ -1,16 +1,15 @@
-import os,stat
+import os 
 import sys 
 from src.mlProject.logger import logging
 from src.mlProject.exception import CustomException 
 from dataclasses import dataclass
 import pandas as pd 
 from dotenv import load_dotenv
-import mysql.connector  
+import mysql.connector 
 import pickle 
 from sklearn.metrics import accuracy_score , precision_score,recall_score 
 
 load_dotenv() 
-
 host = os.getenv('host')
 user = os.getenv('user') 
 password = os.getenv('password')
@@ -54,6 +53,7 @@ def load_model(file_path):
     
 def evaluate_model(y_test,y_pred):
     try :
+        logging.info('Evaluating model...')
         accuracy = accuracy_score(y_test, y_pred)
         precision = precision_score(y_test, y_pred)
         recall = recall_score(y_test, y_pred)

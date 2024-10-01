@@ -22,16 +22,16 @@ class Prediction():
             logging.info("Prediction starting")
             logging.info('Model and processor are loaded')
             input_data = self.processor.transform(input_data)  # Apply the same transformations as the training pipeline
+            logging.info("input data is processed successfully{}".format(input_data))
             prediction = self.model.predict(input_data) 
+            logging.info("Prediction completed successfully")  # log the success message 
             return prediction 
         except Exception as e:
+            logging.error("Error in prediction"+ str(e))  # log the error
             raise CustomException(e,sys)   # re-raise the exception with additional context
         
-if __name__ == "__main__":
-    predictor = Prediction()
-    df = pd.read_csv(r"artifacts\data\test.csv")
-    input_data = df.drop('class',axis=1) 
-    prediction = predictor.predict(input_data) 
-    print(f"Predicted class: {prediction}") 
+ 
+        
+
 
 
