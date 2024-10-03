@@ -57,8 +57,7 @@ class ModelTrainer():
                                                                 max_features=study.best_params['max_features'])
                 model.fit(x, y)
                 y_pred = model.predict(x)
-                logging.info("Model preparation completed") 
-                save_model(model,self.config.model_path)
+                logging.info("Model preparation completed")
                 mlflow.log_param('n_estimators',study.best_params['n_estimators'])
                 mlflow.log_param('criterion',study.best_params['criterion'])
                 mlflow.log_param('max_depth',study.best_params['max_depth'])
@@ -67,7 +66,8 @@ class ModelTrainer():
                 mlflow.log_metric("accuracy", accuracy)
                 mlflow.log_metric("precision", precision)
                 mlflow.log_metric("recall", recall)
-            return model
+                model_info = mlflow.sklearn.log_model(sk_model=model, artifact_path="model")
+                return model
 
         except Exception as e:
             logging.error('Error getting model trainer file'+str(e))
