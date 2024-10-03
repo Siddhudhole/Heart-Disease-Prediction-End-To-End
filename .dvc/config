@@ -1,0 +1,3 @@
+['remote "origin"']
+    url = s3://dvc
+    endpointurl = https://dagshub.com/Siddhudhole/Heart-Disease-Prediction-End-To-End.s3
