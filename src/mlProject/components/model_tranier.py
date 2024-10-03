@@ -66,7 +66,13 @@ class ModelTrainer():
                 mlflow.log_metric("accuracy", accuracy)
                 mlflow.log_metric("precision", precision)
                 mlflow.log_metric("recall", recall)
-                model_info = mlflow.sklearn.log_model(sk_model=model, artifact_path="model")
+                    # Log the sklearn model and register as version 1
+                mlflow.sklearn.log_model(
+                    sk_model=model,
+                    artifact_path="sklearn-model",
+                    registered_model_name="heart-disease-random-forest-clf-model",
+                )
+                logging.info('Model register on remote server successfully')
                 return model
 
         except Exception as e:
