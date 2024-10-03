@@ -1,0 +1,5 @@
+outs:
+- md5: bc769646c04dc383355c54b90c6d7332
+  size: 1998
+  hash: md5
+  path: processor.pkl
